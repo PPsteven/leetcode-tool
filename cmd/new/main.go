@@ -10,8 +10,6 @@ import (
 	"strings"
 	"text/template"
 
-	"github.com/tidwall/gjson"
-
 	"github.com/zcong1993/leetcode-tool/pkg/leetcode"
 )
 
@@ -115,7 +113,7 @@ func Run(lc *leetcode.Leetcode, n string, lang string) {
 		n,
 	}
 	metaf.Meta.Content = strings.ReplaceAll(metaf.Meta.Content, "↵", "")
-	metaf.Meta.Code = gjson.Get(metaf.CodeSnippets, fmt.Sprintf("#(lang=%s).code", config.LeetcodeLang)).String()
+	//metaf.Meta.Code = gjson.Get(metaf.CodeSnippets, fmt.Sprintf("#(lang=%s).code", config.LeetcodeLang)).String()
 
 	problemFp := filepath.Join(fp, "problem.md")
 	if !fileExists(problemFp) {

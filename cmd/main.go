@@ -47,8 +47,6 @@ func showMeta(lc *leetcode.Leetcode, number string) {
 		log.Fatal("mate not found")
 	}
 	meta.Content = ""
-	meta.Code = ""
-	meta.CodeSnippets = ""
 	fmt.Printf("%+v\n", meta)
 }
 
