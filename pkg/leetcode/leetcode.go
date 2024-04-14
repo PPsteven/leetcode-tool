@@ -24,6 +24,7 @@ type Meta struct {
 	Link       string
 	Content    string
 	Code       string
+	Solved     bool
 	//CodeSnippets string
 }
 

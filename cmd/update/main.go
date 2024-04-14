@@ -26,6 +26,7 @@ var (
 	draftRegex      = regexp.MustCompile("@draft (.+)")
 	linkRegex       = regexp.MustCompile("@link (.+)")
 	frontendIdRegex = regexp.MustCompile("@frontendId (.+)")
+	solvedRegex     = regexp.MustCompile("@solved (.+)")
 )
 
 const (
@@ -46,6 +47,8 @@ type Meta struct {
 	Fp         string
 	Link       string
 	FrontendId string
+	Ext        string
+	Completed  string
 }
 
 type Metas []*Meta
@@ -92,6 +95,11 @@ func findMeta(content []byte, fp string) *Meta {
 		return nil
 	}
 	tags := strings.Split(findTag(content, tagsRegex), ",")
+	solved := false
+	if strings.ToLower(findTag(content, solvedRegex)) == "true" {
+		solved = true
+	}
+
 	return &Meta{
 		Index:      findTag(content, indexRegex),
 		Title:      findTag(content, titleRegex),
@@ -101,7 +109,16 @@ func findMeta(content []byte, fp string) *Meta {
 		Fp:         filepath.Dir(fp),
 		Link:       findTag(content, linkRegex),
 		FrontendId: findTag(content, frontendIdRegex),
+		Ext:        filepath.Ext(fp),
+		Completed:  genCompleted(solved, filepath.Ext(fp)),
 	}
+}
+
+func genCompleted(isCompleted bool, ext string) string {
+	if isCompleted {
+		return ext[1:] + " ✅"
+	}
+	return ext[1:] + " ❎"
 }
 
 func genTable(data *TableData) string {
@@ -164,7 +181,7 @@ func Run() {
 	}
 
 	for tag, metas := range tagMetas {
-		fp := fmt.Sprintf("./toc/%s.md", tag)
+		fp := filepath.Join(toc, fmt.Sprintf("%s.md", tag))
 		wg.Add(1)
 		metas := metas
 		tag := tag
@@ -202,9 +219,9 @@ var tableStr = `
 
 总计: {{ .Total }}
 
-| 网页序号 | 序号 | 难度 | 题目                    | 解答                      |
-| ---- | ---- | ---- | ------------------ | ---------------- |{{ range .Metas }}
-| {{ .FrontendId }} | {{ .Index }} | {{ .Difficulty }} | [{{ .Title }}]({{ .Link }}) | [{{ .Fp }}](../{{ .Fp }})|{{ end }}
+| 网页序号 | 序号 | 难度 | 题目                    | 解答                      | 完成 |
+| ---- | ---- | ---- | ------------------ | ---------------- | -------- | {{ range .Metas }}
+| {{ .FrontendId }} | {{ .Index }} | {{ .Difficulty }} | [{{ .Title }}]({{ .Link }}) | [{{ .Fp }}](../{{ .Fp }})| {{ .Completed }} |{{ end }}
 `
 
 var tagStr = `# {{ .Name }}

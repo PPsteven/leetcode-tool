@@ -146,6 +146,7 @@ var (
  * @draft false
  * @link {{ .Link }}
  * @frontendId {{ .FrontendId }}
+ * @solved {{ .Solved }}
 */
 
 {{ .Code }}
@@ -170,6 +171,7 @@ var (
  * @draft false
  * @link {{ .Link }}
  * @frontendId {{ .FrontendId }}
+ * @solved {{ .Solved }}
 */
 
 export {{ .Code }}
@@ -188,6 +190,7 @@ var (
  * @draft false
  * @link {{ .Link }}
  * @frontendId {{ .FrontendId }}
+ * @solved {{ .Solved }}
 */
 
 {{ .Code }}
@@ -206,6 +209,7 @@ var (
 @draft false
 @link {{ .Link }}
 @frontendId {{ .FrontendId }}
+@solved {{ .Solved }}
 '''
 
 {{ .Code }}
@@ -226,6 +230,7 @@ var (
  * @draft false
  * @link {{ .Link }}
  * @frontendId {{ .FrontendId }}
+ * @solved {{ .Solved }}
 */
 {{ .Code }}
 `
