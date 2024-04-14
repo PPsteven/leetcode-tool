@@ -3,7 +3,7 @@ package update
 import (
 	"bytes"
 	"fmt"
-	"html/template"
+	"github.com/zcong1993/leetcode-tool/pkg/leetcode"
 	"io/ioutil"
 	"log"
 	"os"
@@ -13,6 +13,7 @@ import (
 	"strconv"
 	"strings"
 	"sync"
+	"text/template"
 
 	"github.com/bmatcuk/doublestar/v2"
 )
@@ -27,8 +28,13 @@ var (
 	frontendIdRegex = regexp.MustCompile("@frontendId (.+)")
 )
 
+const (
+	toc = "toc"
+)
+
 var (
 	tableTpl = template.Must(template.New("table").Parse(tableStr))
+	tagTpl   = template.Must(template.New("tag").Parse(tagStr))
 )
 
 type Meta struct {
@@ -152,14 +158,28 @@ func Run() {
 		}()
 	}
 	wg.Wait()
+
+	if !fileExists(toc) {
+		_ = os.MkdirAll(toc, 0755)
+	}
+
 	for tag, metas := range tagMetas {
 		fp := fmt.Sprintf("./toc/%s.md", tag)
-		if !fileExists(fp) {
-			continue
-		}
 		wg.Add(1)
 		metas := metas
+		tag := tag
 		go func() {
+			if !fileExists(fp) {
+				var content bytes.Buffer
+				err := tagTpl.Execute(&content, &leetcode.Tag{Name: tag})
+				if err != nil {
+					log.Fatal(err)
+				}
+				err = ioutil.WriteFile(fp, content.Bytes(), 0644)
+				if err != nil {
+					log.Printf("write file %s error, %s\n", fp, err)
+				}
+			}
 			content, err := ioutil.ReadFile(fp)
 			if err != nil {
 				log.Fatal(err)
@@ -185,4 +205,10 @@ var tableStr = `
 | 网页序号 | 序号 | 难度 | 题目                    | 解答                      |
 | ---- | ---- | ---- | ------------------ | ---------------- |{{ range .Metas }}
 | {{ .FrontendId }} | {{ .Index }} | {{ .Difficulty }} | [{{ .Title }}]({{ .Link }}) | [{{ .Fp }}](../{{ .Fp }})|{{ end }}
+`
+
+var tagStr = `# {{ .Name }}
+
+<!--- table -->
+
 `

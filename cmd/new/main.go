@@ -105,7 +105,7 @@ func Run(lc *leetcode.Leetcode, n string, lang string) {
 	number := normalizeNumber(meta.Index)
 	folderName := prefix + number
 	fp := filepath.Join(folder, folderName)
-	os.MkdirAll(fp, 0755)
+	_ = os.MkdirAll(fp, 0755)
 	metaf := &MetaWithFolder{
 		*meta,
 		folderName,

@@ -23,7 +23,7 @@ type Meta struct {
 	Tags       []string
 	Link       string
 	Content    string
-	//Code         string
+	Code       string
 	//CodeSnippets string
 }
 
