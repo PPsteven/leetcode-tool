@@ -1,17 +1,23 @@
-# leetcode-tool ![goreleaser](https://github.com/zcong1993/leetcode-tool/workflows/goreleaser/badge.svg)
+# leetcode-tool
 
-<!--
-[![Go Report Card](https://goreportcard.com/badge/github.com/zcong1993/leetcode-tool)](https://goreportcard.com/report/github.com/zcong1993/leetcode-tool)
--->
+> Leetcode 刷题助手
+> Leetcode Assistant
 
-> 一个让你更方便刷题的工具
+## Introduction
+一个GO CLI命令行工具辅助离线刷题记录。
+功能如下：
+- 显示题目信息
+- 按题目tag整理分类
+- 支持Openai辅助答题
+
+![](./screenshots/all.png)
 
 ## Install
 
 ```bash
 # homebrew
-$ brew tap zcong1993/homebrew-tap
-$ brew install zcong1993/homebrew-tap/leetcode-tool
+$ brew tap ppsteven/homebrew-tap
+$ brew install ppsteven/homebrew-tap/leetcode-tool
 
 # 直接安装
 curl -fsSL https://bina.egoist.sh/zcong1993/leetcode-tool | sh
@@ -20,16 +26,25 @@ curl -fsSL https://bina.egoist.sh/zcong1993/leetcode-tool | sh
 $ leetcode-tool help
 ```
 
-## 配置
+## Config 配置
 
 可以在项目根目录创建 `.leetcode.json` 配置文件.
 
 ```js
 {
-  "lang": "go", // 项目全局语言, 配置后 new 命令 --lang 参数可省略, 目前支持 go ts js py3 java
-  "cookie": "xxx"
+    "lang": "go/py3/ts/java", // 项目全局语言, 配置后 new 命令 --lang 参数可省略, 目前支持 go ts js py3 java
+    "env": "en/cn",
+    "gpt": {
+    "api_key": "sk-xxx",
+        "model": "gpt-3.5-turbo"
+    }
 }
 ```
+- lang: 当前支持语言 go/py3/ts/java
+- env: 界面语言 cn 中文站/ en 英文站
+- gpt: 支持gpt对题目提示，在没有思路的时候辅助解题。
+  - api_key: openai key
+  - model: openai model
 
 ## 使用说明
 
@@ -67,7 +82,10 @@ number 为网页上显示的题目序号, 例如: `leetcode-tool new 1` 创建�
 
 根据已完成题目类别更新 `toc` 文件夹下的算法分类状态.
 
-### 更新 leetcode 分类
+### ChatGPT 辅助提示解题思路
+`leetcode-tool gpt <number>`
+
+### 更新 leetcode 分类（不建议使用）
 
 `leetcode-tool tags`
 
@@ -100,6 +118,30 @@ $ leetcode-tool update
 # 4. 提交代码
 ```
 
+题目注释如何使用
+
+下面是自动生成的题目注释，通过编辑注释信息，帮助我们分类该题的解法。
+```
+/**
+ * @index 1
+ * @title Two Sum
+ * @difficulty EASY
+ * @tags array,hash-table
+ * @draft false
+ * @link https://leetcode.cn/problems/two-sum/description/
+ * @frontendId 1
+ * @solved false
+*/
+```
+- index: 题目编号
+- title: 题目名称
+- difficulty: 题目难易程度
+- tags: 题目标签（可以自定义标签）
+- draft: 是否草稿，true 则不会在update的时候对该题进行分类
+- link: 题目链接
+- frontendId: 题目编号
+- solved: 是否解决
+
 ## 为什么需要这个工具
 
 1. leetcode 网页 IDE 太弱了, 我需要本地解题
@@ -107,21 +149,13 @@ $ leetcode-tool update
 1. GitHub 易于分享题解
 1. 根据自己需要, 组织题目做专题之类的总结
 
-## 模板项目
-
-- Typescript [zcong1993/leetcode-ts-template](https://github.com/zcong1993/leetcode-ts-template)
+## 项目参考
+- 项目Fork自 https://github.com/zcong1993/leetcode-tool 此项目已多年不更新
+- Leetcode 题目爬取参考：https://github.com/bunnyxt/lcid
 
 ## 使用此工具的项目
 
 - [zcong1993/algo-go](https://github.com/zcong1993/algo-go)
-
-## 常见问题
-
-### 1. 报错 panic: runtime error: invalid memory address or nil pointer dereference
-
-因为 LeetCode 网站现在某些请求会校验 cookie, 采取的修复方法是请求增加了 cookie, 但是内置 cookie 没法确保长期有效.
-
-所以 `.leetcode.json` 配置文件中支持 cookie 配置, 后续请访问此链接 [https://leetcode-cn.com/api/problems/all](https://leetcode-cn.com/api/problems/all) 拿到 cookie 自行更新配置文件.
 
 ## License
 

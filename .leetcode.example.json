@@ -1,4 +1,9 @@
 {
-  "lang": "go",
-  "cookie": "xxx"
+  "lang": "go/py3/ts/java",
+  "env": "en/cn",
+  "gpt": {
+    "api_key": "sk-xxx",
+    "model": "gpt-3.5-turbo"
+  }
 }
+
