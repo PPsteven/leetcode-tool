@@ -5,9 +5,15 @@ import (
 	"io/ioutil"
 )
 
+type Gpt struct {
+	ApiKey string `json:"api_key"` // eg. sk-xxxxxxxxxx
+	Model  string `json:"model"`   // eg. gpt-3.5-turbo
+}
+
 type Config struct {
 	Lang string `json:"lang"`
 	Env  string `json:"env"` // eg. en, cn
+	Gpt  *Gpt   `json:"gpt"`
 }
 
 const configPath = ".leetcode.json"

@@ -2,10 +2,10 @@ package main
 
 import (
 	"fmt"
+	"github.com/zcong1993/leetcode-tool/cmd/gpt"
+	"github.com/zcong1993/leetcode-tool/internal/config"
 	"log"
 	"os"
-
-	"github.com/zcong1993/leetcode-tool/internal/config"
 
 	"github.com/zcong1993/leetcode-tool/cmd/new"
 	"github.com/zcong1993/leetcode-tool/cmd/tags"
@@ -36,6 +36,9 @@ var (
 
 	tagsCmd   = app.Command("tags", "Update tag toc files.")
 	tagsForce = tagsCmd.Flag("force", "force update file").Short('f').Bool()
+
+	gptCmd    = app.Command("gpt", "Use gpt to solve problem.")
+	gptNumber = gptCmd.Arg("number", "problem number").Required().String()
 )
 
 func showMeta(lc *leetcode.Leetcode, number string) {
@@ -66,6 +69,8 @@ func main() {
 		showMeta(lc, *metaNumber)
 	case tagsCmd.FullCommand():
 		tags.Run(lc, *tagsForce)
+	case gptCmd.FullCommand():
+		gpt.Run(lc, *gptNumber)
 	}
 }
 

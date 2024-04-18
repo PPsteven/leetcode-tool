@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/sashabaranov/go-openai"
 	"github.com/zcong1993/leetcode-tool/internal/config"
 	"io"
 	"io/ioutil"
@@ -43,12 +44,14 @@ var (
 )
 
 type Leetcode struct {
-	Config   *config.Config
-	Problems []byte
+	Config    *config.Config
+	GptClient *openai.Client
+	Problems  []byte
 }
 
 func NewLeetcode(config *config.Config) *Leetcode {
-	return &Leetcode{Config: config}
+	client := openai.NewClient("your token")
+	return &Leetcode{Config: config, GptClient: client}
 }
 
 func DownloadFile(remoteFile string) error {
@@ -108,10 +111,12 @@ func (l *Leetcode) getDetail(number string) (*Meta, error) {
 	title := "title"
 	difficulty := problem.Get("difficulty").String()
 	content := "content.en"
+	host := "https://leetcode.com"
 	if l.Config.Env == "cn" {
 		title = "titleCn"
 		content = "content.cn"
 		difficulty = difficultyMap[strings.ToLower(difficulty)]
+		host = "https://leetcode.cn"
 	}
 	title = problem.Get(title).String()
 	content = problem.Get(content).String()
@@ -121,7 +126,7 @@ func (l *Leetcode) getDetail(number string) (*Meta, error) {
 		Title:      title,
 		Difficulty: difficulty,
 		Tags:       tags,
-		Link:       fmt.Sprintf("https://leetcode.cn/problems/%s/description/", problem.Get("titleSlug").String()),
+		Link:       fmt.Sprintf("%s/problems/%s/description/", host, problem.Get("titleSlug").String()),
 		Content:    content,
 	}, nil
 }
