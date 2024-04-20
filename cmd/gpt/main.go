@@ -1,8 +1,8 @@
 package gpt
 
 import (
-	"github.com/zcong1993/leetcode-tool/internal/gpt"
-	"github.com/zcong1993/leetcode-tool/pkg/leetcode"
+	"github.com/ppsteven/leetcode-tool/internal/gpt"
+	"github.com/ppsteven/leetcode-tool/pkg/leetcode"
 	"log"
 )
 

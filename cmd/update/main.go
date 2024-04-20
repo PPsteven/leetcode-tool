@@ -3,7 +3,7 @@ package update
 import (
 	"bytes"
 	"fmt"
-	"github.com/zcong1993/leetcode-tool/pkg/leetcode"
+	"github.com/ppsteven/leetcode-tool/pkg/leetcode"
 	"io/ioutil"
 	"log"
 	"os"

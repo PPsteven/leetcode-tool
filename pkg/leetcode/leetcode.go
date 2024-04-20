@@ -4,10 +4,11 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/ppsteven/leetcode-tool/internal/config"
 	"github.com/sashabaranov/go-openai"
-	"github.com/zcong1993/leetcode-tool/internal/config"
 	"io"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"os"
 	"strings"
@@ -62,8 +63,12 @@ func DownloadFile(remoteFile string) error {
 	}
 	defer out.Close()
 
-	resp, err := http.Get(remoteFile)
+	client := http.Client{
+		Transport: &http.Transport{Proxy: http.ProxyFromEnvironment},
+	}
+	resp, err := client.Get(remoteFile)
 	if err != nil {
+		_ = os.Remove("data/problems.json")
 		return err
 	}
 	defer resp.Body.Close()
@@ -81,11 +86,12 @@ func (l *Leetcode) getAllProblem() ([]byte, error) {
 	file, err := ioutil.ReadFile("data/problems.json")
 	if err != nil && errors.Is(err, os.ErrNotExist) {
 		fmt.Println(fmt.Sprintf("file problems.json not exists, start downloading from %s", RemoteProblems))
-		err = DownloadFile(RemoteProblems)
 
+		err = DownloadFile(RemoteProblems)
 		if err != nil {
-			return nil, fmt.Errorf("download file failed: %v", err)
+			log.Fatal(fmt.Errorf("download file failed: %v", err))
 		}
+
 		file, err := ioutil.ReadFile("data/problems.json")
 		if err != nil {
 			return nil, fmt.Errorf("read file failed: %v", err)

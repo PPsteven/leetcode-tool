@@ -159,4 +159,4 @@ $ leetcode-tool update
 
 ## License
 
-MIT &copy; zcong1993
+MIT &copy; ppsteven

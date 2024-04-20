@@ -11,7 +11,7 @@ import (
 	"sync"
 	"text/template"
 
-	"github.com/zcong1993/leetcode-tool/pkg/leetcode"
+	"github.com/ppsteven/leetcode-tool/pkg/leetcode"
 )
 
 var tagTpl = template.Must(template.New("tag").Parse(tagStr))

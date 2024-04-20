@@ -10,7 +10,7 @@ import (
 	"strings"
 	"text/template"
 
-	"github.com/zcong1993/leetcode-tool/pkg/leetcode"
+	"github.com/ppsteven/leetcode-tool/pkg/leetcode"
 )
 
 type TplFile struct {

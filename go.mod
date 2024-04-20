@@ -1,4 +1,4 @@
-module github.com/zcong1993/leetcode-tool
+module github.com/ppsteven/leetcode-tool
 
 go 1.15
 
@@ -8,6 +8,7 @@ require (
 	github.com/bmatcuk/doublestar/v2 v2.0.3
 	github.com/dghubble/sling v1.4.2 // indirect
 	github.com/sashabaranov/go-openai v1.22.0 // indirect
+	github.com/spf13/viper v1.18.2 // indirect
 	github.com/tidwall/gjson v1.6.3
 	gopkg.in/alecthomas/kingpin.v2 v2.2.6
 )

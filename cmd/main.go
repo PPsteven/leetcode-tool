@@ -2,15 +2,15 @@ package main
 
 import (
 	"fmt"
-	"github.com/zcong1993/leetcode-tool/cmd/gpt"
-	"github.com/zcong1993/leetcode-tool/internal/config"
+	"github.com/ppsteven/leetcode-tool/cmd/gpt"
+	"github.com/ppsteven/leetcode-tool/internal/config"
 	"log"
 	"os"
 
-	"github.com/zcong1993/leetcode-tool/cmd/new"
-	"github.com/zcong1993/leetcode-tool/cmd/tags"
-	"github.com/zcong1993/leetcode-tool/cmd/update"
-	"github.com/zcong1993/leetcode-tool/pkg/leetcode"
+	"github.com/ppsteven/leetcode-tool/cmd/new"
+	"github.com/ppsteven/leetcode-tool/cmd/tags"
+	"github.com/ppsteven/leetcode-tool/cmd/update"
+	"github.com/ppsteven/leetcode-tool/pkg/leetcode"
 
 	"gopkg.in/alecthomas/kingpin.v2"
 )

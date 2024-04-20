@@ -1,8 +1,8 @@
 package config
 
 import (
-	"encoding/json"
-	"io/ioutil"
+	"github.com/spf13/viper"
+	"log"
 )
 
 type Gpt struct {
@@ -25,13 +25,15 @@ func NewConfig() *Config {
 
 func loadConfig() Config {
 	var c Config
-	content, err := ioutil.ReadFile(configPath)
-	if err != nil {
-		return c
+	viper.SetConfigFile(configPath)
+	viper.AutomaticEnv()
+
+	if err := viper.ReadInConfig(); err != nil {
+		log.Fatalf("failed to read config: %s, err: %v", configPath, err)
 	}
-	err = json.Unmarshal(content, &c)
-	if err != nil {
-		return c
+
+	if err := viper.Unmarshal(&c); err != nil {
+		log.Fatalf("failed to unmarshal config: %s, err: %v", configPath, err)
 	}
 	return c
 }
