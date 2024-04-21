@@ -16,10 +16,10 @@ import (
 )
 
 var (
-	version = "master"
-	commit  = ""
-	date    = ""
-	builtBy = ""
+	Version = "master"
+	Commit  = ""
+	Date    = ""
+	BuiltBy = ""
 )
 
 var (
@@ -54,7 +54,7 @@ func showMeta(lc *leetcode.Leetcode, number string) {
 }
 
 func main() {
-	app.Version(buildVersion(version, commit, date, builtBy))
+	app.Version(buildVersion(Version, Commit, Date, BuiltBy))
 	app.VersionFlag.Short('v')
 	app.HelpFlag.Short('h')
 
