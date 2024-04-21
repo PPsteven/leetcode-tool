@@ -6,14 +6,14 @@ import (
 )
 
 type Gpt struct {
-	ApiKey string `json:"api_key"` // eg. sk-xxxxxxxxxx
-	Model  string `json:"model"`   // eg. gpt-3.5-turbo
+	ApiKey string `json:"api_key" mapstructure:"api_key"` // eg. sk-xxxxxxxxxx
+	Model  string `json:"model" mapstructure:"model"`     // eg. gpt-3.5-turbo
 }
 
 type Config struct {
-	Lang string `json:"lang"`
-	Env  string `json:"env"` // eg. en, cn
-	Gpt  *Gpt   `json:"gpt"`
+	Lang string `json:"lang" mapstructure:"lang"`
+	Env  string `json:"env" mapstructure:"env"` // eg. en, cn
+	Gpt  *Gpt   `json:"gpt" mapstructure:"gpt"`
 }
 
 const configPath = ".leetcode.json"
