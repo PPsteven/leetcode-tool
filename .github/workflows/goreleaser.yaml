@@ -1,8 +1,12 @@
 name: goreleaser
 
 on:
+  workflow_dispatch: # 支持手动触发workflow流水线
   release:
     types: [created] # 表示在创建新的 Release 时触发
+  push:
+    tags:
+      - '*' # 推动新的Tag时触发
 
 jobs:
   goreleaser:
