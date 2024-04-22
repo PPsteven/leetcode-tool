@@ -58,18 +58,20 @@ func main() {
 	app.VersionFlag.Short('v')
 	app.HelpFlag.Short('h')
 
-	lc := leetcode.NewLeetcode(config.NewConfig())
-
 	switch kingpin.MustParse(app.Parse(os.Args[1:])) {
 	case updateCmd.FullCommand():
 		update.Run()
 	case newCmd.FullCommand():
+		lc := leetcode.NewLeetcode(config.NewConfig())
 		new.Run(lc, *number, *lang)
 	case metaCmd.FullCommand():
+		lc := leetcode.NewLeetcode(config.NewConfig())
 		showMeta(lc, *metaNumber)
 	case tagsCmd.FullCommand():
+		lc := leetcode.NewLeetcode(config.NewConfig())
 		tags.Run(lc, *tagsForce)
 	case gptCmd.FullCommand():
+		lc := leetcode.NewLeetcode(config.NewConfig())
 		gpt.Run(lc, *gptNumber)
 	}
 }
