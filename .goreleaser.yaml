@@ -34,12 +34,12 @@ changelog:
     exclude:
       - '^docs:'
       - '^test:'
-#brews:
-#  - tap:
-#      owner: zcong1993
-#      name: homebrew-tap
-#    folder: Formula
-#    homepage: https://github.com/zcong1993/leetcode-tool
-#    description: 一个让你更方便刷题的工具
-#    test: |
-#      system "#{bin}/leetcode-tool -v"
+brews:
+  - repository:
+      owner: ppsteven
+      name: homebrew-tap
+    folder: Formula
+    homepage: https://github.com/ppsteven/leetcode-tool
+    description: 一个让你更方便刷题的工具
+    test: |
+      system "#{bin}/leetcode-tool -v"
