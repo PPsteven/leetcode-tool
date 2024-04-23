@@ -26,7 +26,6 @@ func NewConfig() *Config {
 func loadConfig() Config {
 	var c Config
 	viper.SetConfigFile(configPath)
-	viper.AutomaticEnv()
 
 	if err := viper.ReadInConfig(); err != nil {
 		log.Fatalf("failed to read config: %s, err: %v", configPath, err)
