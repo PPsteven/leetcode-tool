@@ -171,7 +171,7 @@ class LcCrawler():
             content = self.fetch_problem_content(v['titleSlug'])
             problems[k]["content"] = content
             i+=1
-        with open('../data/problems.json', 'w') as f:
+        with open('./problems.json', 'w') as f:
             json.dump(problems, f, ensure_ascii=False)
 
 

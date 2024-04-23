@@ -16,7 +16,7 @@ import (
 	"github.com/tidwall/gjson"
 )
 
-const RemoteProblems = "https://raw.githubusercontent.com/PPsteven/leetcode-tool/master/data/problems.json"
+const RemoteProblems = "https://raw.githubusercontent.com/PPsteven/leetcode-tool/master/problems.json"
 
 type Meta struct {
 	Index      string
@@ -57,7 +57,7 @@ func NewLeetcode(config *config.Config) *Leetcode {
 
 func DownloadFile(remoteFile string) error {
 	// Create the file
-	out, err := os.Create("data/problems.json")
+	out, err := os.Create("problems.json")
 	if err != nil {
 		return err
 	}
@@ -68,7 +68,7 @@ func DownloadFile(remoteFile string) error {
 	}
 	resp, err := client.Get(remoteFile)
 	if err != nil {
-		_ = os.Remove("data/problems.json")
+		_ = os.Remove("problems.json")
 		return err
 	}
 	defer resp.Body.Close()
@@ -83,7 +83,7 @@ func DownloadFile(remoteFile string) error {
 }
 
 func (l *Leetcode) getAllProblem() ([]byte, error) {
-	file, err := ioutil.ReadFile("data/problems.json")
+	file, err := ioutil.ReadFile("problems.json")
 	if err != nil && errors.Is(err, os.ErrNotExist) {
 		fmt.Println(fmt.Sprintf("file problems.json not exists, start downloading from %s", RemoteProblems))
 
@@ -92,7 +92,7 @@ func (l *Leetcode) getAllProblem() ([]byte, error) {
 			log.Fatal(fmt.Errorf("download file failed: %v", err))
 		}
 
-		file, err := ioutil.ReadFile("data/problems.json")
+		file, err := ioutil.ReadFile("problems.json")
 		if err != nil {
 			return nil, fmt.Errorf("read file failed: %v", err)
 		}
