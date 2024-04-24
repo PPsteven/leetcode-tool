@@ -21,6 +21,7 @@ const RemoteProblems = "https://raw.githubusercontent.com/PPsteven/leetcode-tool
 type Meta struct {
 	Index      string
 	Title      string
+	Slug       string
 	Difficulty string
 	Tags       []string
 	Link       string
@@ -127,12 +128,15 @@ func (l *Leetcode) getDetail(number string) (*Meta, error) {
 	title = problem.Get(title).String()
 	content = problem.Get(content).String()
 
+	titleSlug := problem.Get("titleSlug").String()
+
 	return &Meta{
 		Index:      number,
 		Title:      title,
 		Difficulty: difficulty,
 		Tags:       tags,
-		Link:       fmt.Sprintf("%s/problems/%s/description/", host, problem.Get("titleSlug").String()),
+		Link:       fmt.Sprintf("%s/problems/%s/description/", host, titleSlug),
+		Slug:       titleSlug,
 		Content:    content,
 	}, nil
 }

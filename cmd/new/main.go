@@ -33,23 +33,27 @@ var (
 	languageConfigs = map[string]LanguageConfig{
 		"go": {
 			LeetcodeLang: "Go",
-			TplFiles:     []TplFile{{"code", "solve_%s.go", codeStrGo}, {"test", "solve_%s_test.go", testCodeStrGo}},
+			TplFiles:     []TplFile{{"code", "%s.%s.go", codeStrGo}, {"test", "%s.%s_test.go", testCodeStrGo}},
 		},
 		"ts": {
 			LeetcodeLang: "TypeScript",
-			TplFiles:     []TplFile{{"code", "solve_%s.ts", codeStrTs}, {"test", "solve_%s.test.ts", testCodeStrTs}},
+			TplFiles:     []TplFile{{"code", "%s.%s.ts", codeStrTs}, {"test", "%s.%s.test.ts", testCodeStrTs}},
 		},
 		"js": {
 			LeetcodeLang: "JavaScript",
-			TplFiles:     []TplFile{{"code", "solve_%s.js", codeStrJs}, {"test", "solve_%s.test.js", testCodeStrJs}},
+			TplFiles:     []TplFile{{"code", "%s.%s.js", codeStrJs}, {"test", "%s.%s.test.js", testCodeStrJs}},
 		},
 		"py3": {
 			LeetcodeLang: "Python3",
-			TplFiles:     []TplFile{{"code", "solve_%s.py", codeStrPy3}, {"test", "test_%s.py", testCodeStrPy3}, {"__init__", "__init__.py", ""}},
+			TplFiles:     []TplFile{{"code", "%s.%s.py", codeStrPy3}, {"test", "%s.%s_test.py", testCodeStrPy3}, {"__init__", "__init__.py", ""}},
 		},
 		"java": {
 			LeetcodeLang: "Java",
-			TplFiles:     []TplFile{{"code", "solve_%s.java", codeStrJava}, {"test", "test_%s.java", testCodeStrJava}},
+			TplFiles:     []TplFile{{"code", "%s.%s.java", codeStrJava}, {"test", "test_%s_%s.java", testCodeStrJava}},
+		},
+		"cpp": {
+			LeetcodeLang: "C++",
+			TplFiles:     []TplFile{{"code", "%s.%s.cpp", codeStrCpp}},
 		},
 	}
 )
@@ -103,7 +107,7 @@ func Run(lc *leetcode.Leetcode, n string, lang string) {
 		log.Fatal(err, meta)
 	}
 	number := normalizeNumber(meta.Index)
-	folderName := prefix + number
+	folderName := number + "." + meta.Slug
 	fp := filepath.Join(folder, folderName)
 	_ = os.MkdirAll(fp, 0755)
 	metaf := &MetaWithFolder{
@@ -123,8 +127,8 @@ func Run(lc *leetcode.Leetcode, n string, lang string) {
 
 	for _, tpl := range config.TplFiles {
 		fileName := tpl.FileName
-		if strings.Count(tpl.FileName, "%s") > 0 {
-			fileName = fmt.Sprintf(tpl.FileName, number)
+		if strings.Count(tpl.FileName, "%s") > 1 {
+			fileName = fmt.Sprintf(tpl.FileName, number, meta.Slug)
 		}
 		fp := filepath.Join(fp, fileName)
 		if !fileExists(fp) {
@@ -243,5 +247,28 @@ public class test_{{ printf "%04s" .Index }} {
 		// do some test
 	}
 }
+`
+)
+
+var (
+	codeStrCpp = `#include <algorithm>
+#include <unordered_map>
+#include <string>
+#include <vector>
+#include <iostream>
+#include <math.h>
+using namespace std;
+
+/**
+ * @index {{ .Index }}
+ * @title {{ .Title }}
+ * @difficulty {{ .Difficulty }}
+ * @tags {{ .TagStr }}
+ * @draft false
+ * @link {{ .Link }}
+ * @frontendId {{ .FrontendId }}
+ * @solved {{ .Solved }}
+*/
+{{ .Code }}
 `
 )
