@@ -3,7 +3,8 @@
   "env": "en/cn",
   "gpt": {
     "api_key": "sk-xxx",
-    "model": "gpt-3.5-turbo"
+    "model": "gpt-3.5-turbo",
+    "prompt": "您是一个算法专家，请基于下面的算法题目，给出该算法的思路和复杂度, 使用 {{ .TextLang }} 回答\nSETP1. 给出算法的归类，如递归，栈\nSETP2. 若是存在暴力解法，给出思路和复杂度\nSETP3. 给出最优解法和复杂度\nSETP4. 代码实现，使用 {{ .Lang }} 语言，代码带注释和测试样例。\n\n{{ .Problem }}"
   }
 }
 

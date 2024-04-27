@@ -73,11 +73,12 @@ func (o *Openai) Hint(lc *leetcode.Leetcode, number string) (string, error) {
 	}
 
 	textLang := "中文"
-	if lc.Config.Lang == "en" {
-		textLang = "English"
+	if lc.Config.Env == "en" {
+		textLang = "英文"
 	}
 
 	var content bytes.Buffer
+	hitTpl := template.Must(template.New("hint").Parse(GetPrompt(lc)))
 	err = hitTpl.Execute(&content, &HintData{
 		Lang:     lc.Config.Lang,
 		TextLang: textLang,
@@ -95,9 +96,15 @@ type HintData struct {
 	Problem  string
 }
 
-var hitTpl = template.Must(template.New("hint").Parse(hitStr))
+func GetPrompt(lc *leetcode.Leetcode) string {
+	var prompt = defaultHitStr
+	if len(lc.Config.Gpt.Prompt) > 0 {
+		prompt = lc.Config.Gpt.Prompt
+	}
+	return prompt
+}
 
-var hitStr = `
+var defaultHitStr = `
 您是一个算法专家，请基于下面的算法题目，给出该算法的思路和复杂度, 使用 {{ .TextLang }} 回答
 SETP1. 给出算法的归类，如递归，栈
 SETP2. 若是存在暴力解法，给出思路和复杂度

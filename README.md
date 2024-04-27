@@ -38,15 +38,31 @@ $ leetcode-tool help
     "env": "en/cn",
     "gpt": {
     "api_key": "sk-xxx",
-        "model": "gpt-3.5-turbo"
+        "model": "gpt-3.5-turbo",
+        "prompt": "您是一个算法专家，请基于下面的算法题目，给出该算法的思路和复杂度, 使用 {{ .TextLang }} 回答\nSETP1. 给出算法的归类，如递归，栈\nSETP2. 若是存在暴力解法，给出思路和复杂度\nSETP3. 给出最优解法和复杂度\nSETP4. 代码实现，使用 {{ .Lang }} 语言，代码带注释和测试样例。\n\n{{ .Problem }}"
     }
 }
 ```
 - lang: 当前支持语言 go/py3/ts/java
 - env: 界面语言 cn 中文站/ en 英文站
-- gpt: 支持gpt对题目提示，在没有思路的时候辅助解题。
+- gpt: 支持gpt对题目提示，在没有思路的时候辅助解题
   - api_key: openai key
   - model: openai model
+  - prompt: 自定义提示词，双花括号代表的是变量，在生成提示词的时候会被替换为字符串
+    - {{ .TextLang }} 根据env决定，en:英文，cn:中文
+    - {{ .Lang }} 编程语言
+    - {{ .Problem }} 题目内容，必须加上
+    - prompt 如果不填写的话，就使用如下默认prompt提示词模板
+
+```text
+您是一个算法专家，请基于下面的算法题目，给出该算法的思路和复杂度, 使用 {{ .TextLang }} 回答
+SETP1. 给出算法的归类，如递归，栈
+SETP2. 若是存在暴力解法，给出思路和复杂度
+SETP3. 给出最优解法和复杂度
+SETP4. 代码实现，使用 {{ .Lang }} 语言，代码带注释和测试样例。
+
+{{ .Problem }}
+```
 
 ### 2. 开始做题
 
