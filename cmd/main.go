@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/ppsteven/leetcode-tool/cmd/gpt"
+	"github.com/ppsteven/leetcode-tool/cmd/sync"
 	"github.com/ppsteven/leetcode-tool/internal/config"
 	"log"
 	"os"
@@ -39,6 +40,9 @@ var (
 
 	gptCmd    = app.Command("gpt", "Use gpt to solve problem.")
 	gptNumber = gptCmd.Arg("number", "problem number").Required().String()
+
+	syncCmd = app.Command("sync", "Sync leetcode records.")
+	notion  = syncCmd.Flag("notion", "sync to notion.").Bool()
 )
 
 func showMeta(lc *leetcode.Leetcode, number string) {
@@ -73,6 +77,9 @@ func main() {
 	case gptCmd.FullCommand():
 		lc := leetcode.NewLeetcode(config.NewConfig())
 		gpt.Run(lc, *gptNumber)
+	case syncCmd.FullCommand():
+		lc := leetcode.NewLeetcode(config.NewConfig())
+		sync.Run(lc, *notion)
 	}
 }
 
