@@ -21,6 +21,11 @@ func Run(lc *leetcode.Leetcode, isNotion bool) {
 		nc := notion.NewNotion(lc.Config.Notion.Token).
 			WithConfig("", lc.Config.Notion.DatabaseID)
 
+		err := nc.Init()
+		if err != nil {
+			log.Fatalf("notion init failed: %v", err)
+		}
+
 		g, _ := errgroup.WithContext(context.TODO())
 		nThread := 5
 
@@ -37,7 +42,7 @@ func Run(lc *leetcode.Leetcode, isNotion bool) {
 		for i := 0; i < nThread; i++ {
 			g.Go(func() error {
 				for record := range in {
-					err := nc.Insert(record)
+					err := nc.InsertOrUpdate(record)
 					if err != nil {
 						return err
 					}
@@ -72,8 +77,9 @@ func MetaToRecord(e *meta.Meta) *notion.Record {
 	}
 
 	fields := []*notion.Field{
-		{Type: "title", Name: "ID", Content: e.Index},
-		{Type: "text", Name: "Name", Content: e.Title},
+		{Type: "text", Name: "_id", Content: e.ID},
+		{Type: "text", Name: "ID", Content: e.Index},
+		{Type: "title", Name: "Name", Content: e.Title},
 		{Type: "url", Name: "Link", Content: e.Link},
 		{Type: "select", Name: "Difficulty", Content: e.Difficulty},
 		{Type: "multi_select", Name: "Tags", Content: e.Tags},

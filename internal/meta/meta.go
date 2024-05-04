@@ -1,6 +1,8 @@
 package meta
 
 import (
+	"crypto/sha256"
+	"encoding/hex"
 	"github.com/bmatcuk/doublestar/v2"
 	"github.com/ppsteven/leetcode-tool/internal/helper"
 	"io/ioutil"
@@ -24,6 +26,7 @@ var (
 )
 
 type Meta struct {
+	ID         string
 	Index      string
 	Title      string
 	Difficulty string
@@ -120,6 +123,7 @@ func findMeta(content []byte, fp string) *Meta {
 	}
 
 	return &Meta{
+		ID:         GetMetaID(fp),
 		Index:      findTag(content, indexRegex),
 		Title:      findTag(content, titleRegex),
 		Difficulty: findTag(content, difficultyRegex),
@@ -139,4 +143,10 @@ func genCompleted(isCompleted bool, ext string) string {
 		return ext[1:] + " ✅"
 	}
 	return ext[1:] + " ❌"
+}
+
+func GetMetaID(fp string) string {
+	hash := sha256.New()
+	hash.Write([]byte(fp))
+	return hex.EncodeToString(hash.Sum(nil))
 }

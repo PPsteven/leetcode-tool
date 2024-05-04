@@ -2,13 +2,24 @@ package notion
 
 import (
 	"context"
+	"fmt"
 	"github.com/jomei/notionapi"
+	"log"
+	"strings"
 )
+
+type PageUID string
+
+type SigAndID struct {
+	Signature string
+	PageID    notionapi.PageID
+}
 
 type Notion struct {
 	DatabaseID notionapi.DatabaseID
 	PageID     notionapi.PageID
 	client     *notionapi.Client
+	PageSig    map[PageUID]*SigAndID
 }
 
 type Field struct {
@@ -69,6 +80,77 @@ func (r *Record) MakeProperties() notionapi.Properties {
 	return properties
 }
 
+type PageData struct {
+	PageID notionapi.PageID
+	Data   map[string]string
+}
+
+func ParsePage(page *notionapi.Page) (PageUID, *PageData) {
+	var pageUID PageUID
+	pageID := GetPageID(page.ID)
+	data := make(map[string]string)
+	for name, property := range page.Properties {
+		data[name] = ParseProperty(property)
+	}
+	if v, ok := data["_id"]; ok {
+		pageUID = PageUID(v)
+	} else {
+		log.Fatalf("_id not found: %v", data)
+	}
+	return pageUID, &PageData{PageID: notionapi.PageID(pageID), Data: data}
+}
+
+func ParseProperty(property notionapi.Property) string {
+	switch property.GetType() {
+	case "title":
+		p, ok := property.(*notionapi.TitleProperty)
+		if !ok {
+			log.Fatalf("title parsed failed: %v", property)
+		}
+		if len(p.Title) == 0 {
+			return ""
+		}
+		return p.Title[0].Text.Content
+	case "rich_text":
+		p, ok := property.(*notionapi.RichTextProperty)
+		if !ok {
+			log.Fatalf("rich_text parsed failed: %v", property)
+		}
+		if len(p.RichText) == 0 {
+			return ""
+		}
+		return p.RichText[0].Text.Content
+	case "url":
+		p, ok := property.(*notionapi.URLProperty)
+		if !ok {
+			log.Fatalf("url parsed failed: %v", property)
+		}
+		return p.URL
+	case "select":
+		p, ok := property.(*notionapi.SelectProperty)
+		if !ok {
+			log.Fatalf("select parsed failed: %v", property)
+		}
+		return p.Select.Name
+	case "multi_select":
+		p, ok := property.(*notionapi.MultiSelectProperty)
+		if !ok {
+			log.Fatalf("multi_select parsed failed: %v", property)
+		}
+		optionStr := ""
+		for _, option := range p.MultiSelect {
+			optionStr += option.Name + ","
+		}
+		if len(optionStr) > 0 {
+			optionStr = optionStr[:len(optionStr)-1]
+		}
+		return optionStr
+	default:
+		log.Fatalf("%s not supported current", property.GetType())
+	}
+	return ""
+}
+
 func NewNotion(token string) *Notion {
 	client := notionapi.NewClient(notionapi.Token(token))
 	return &Notion{
@@ -77,9 +159,23 @@ func NewNotion(token string) *Notion {
 }
 
 func (n *Notion) WithConfig(pageID, databaseID string) *Notion {
-	n.DatabaseID = notionapi.DatabaseID(databaseID)
 	n.PageID = notionapi.PageID(pageID)
+	n.DatabaseID = notionapi.DatabaseID(databaseID)
 	return n
+}
+
+func (n *Notion) Init() error {
+	if n.DatabaseID != "" {
+		records, err := n.Query()
+		if err != nil {
+			return fmt.Errorf("query failed: %v", err)
+		}
+		n.PageSig = make(map[PageUID]*SigAndID)
+		for pageUID, pageData := range records {
+			n.PageSig[pageUID] = &SigAndID{PageID: pageData.PageID, Signature: GetPageSig(pageData.Data)}
+		}
+	}
+	return nil
 }
 
 func (n *Notion) Insert(record *Record) error {
@@ -94,4 +190,57 @@ func (n *Notion) Insert(record *Record) error {
 
 	_, err := n.client.Page.Create(ctx, pageReq)
 	return err
+}
+
+func (n *Notion) Update(pageID notionapi.PageID, record *Record) error {
+	ctx := context.Background()
+
+	updateReq := &notionapi.PageUpdateRequest{
+		Properties: record.MakeProperties(),
+	}
+	_, err := n.client.Page.Update(ctx, pageID, updateReq)
+
+	return err
+}
+
+func (n *Notion) Query() (records map[PageUID]*PageData, err error) {
+	ctx := context.Background()
+
+	dbQueryReq := &notionapi.DatabaseQueryRequest{}
+
+	queryResp, err := n.client.Database.Query(ctx, n.DatabaseID, dbQueryReq)
+
+	if err != nil {
+		return nil, err
+	}
+
+	records = make(map[PageUID]*PageData)
+	for _, result := range queryResp.Results {
+		pageUID, pageData := ParsePage(&result)
+		records[pageUID] = pageData
+	}
+	return records, nil
+}
+
+func (n *Notion) InsertOrUpdate(record *Record) error {
+	pageUID, pageData := ParsePage(&notionapi.Page{Properties: record.MakeProperties()})
+
+	if pageSig, ok := n.PageSig[pageUID]; ok {
+		// 签名不一致，更新行信息
+		if pageSig.Signature != GetPageSig(pageData.Data) {
+			return n.Update(n.PageSig[pageUID].PageID, record)
+		} else {
+			return nil
+		}
+	}
+
+	return n.Insert(record)
+}
+
+func GetPageSig(v map[string]string) string {
+	return fmt.Sprintf("%s_%s_%s_%s_%s_%s", v["Difficulty"], v["ID"], v["Link"], v["Name"], v["Solved"], v["Tags"])
+}
+
+func GetPageID(objectID notionapi.ObjectID) string {
+	return strings.ReplaceAll(objectID.String(), "-", "")
 }
