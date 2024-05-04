@@ -27,7 +27,7 @@ func Run(lc *leetcode.Leetcode, isNotion bool) {
 		}
 
 		g, _ := errgroup.WithContext(context.TODO())
-		nThread := 5
+		nThread := 1
 
 		in := make(chan *notion.Record, 10)
 		go func() {

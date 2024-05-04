@@ -152,7 +152,7 @@ func ParseProperty(property notionapi.Property) string {
 }
 
 func NewNotion(token string) *Notion {
-	client := notionapi.NewClient(notionapi.Token(token))
+	client := notionapi.NewClient(notionapi.Token(token), notionapi.WithRetry(10))
 	return &Notion{
 		client: client,
 	}
