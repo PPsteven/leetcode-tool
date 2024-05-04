@@ -172,11 +172,11 @@ func (n *Notion) Init() error {
 	if n.DatabaseID == "" && n.PageID != "" {
 		db, err := n.CreateDB()
 		if err != nil {
-			return fmt.Errorf("create database failed: %v", err)
+			return fmt.Errorf("create db failed: %v", err)
 		}
 		n.DatabaseID = notionapi.DatabaseID(GetStandardID(db.ID))
 
-		log.Printf("Create Database: %d, Please add the database_id in the config file\n", n.DatabaseID)
+		log.Printf("Create Database: %s, Please add the database_id in the config file\n", n.DatabaseID)
 		log.Printf("Visited Link: %s", fmt.Sprintf("https://www.notion.so/%s", n.DatabaseID))
 	}
 

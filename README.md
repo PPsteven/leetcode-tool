@@ -15,7 +15,7 @@
 ![](./screenshots/gpt.gif)
 
 ## What's Next
-- 接入notion api，使用notion管理做题进度
+- [x] 接入notion api，使用notion管理做题进度
 
 ## Install
 
@@ -100,6 +100,20 @@ $ leetcode-tool new 1
 $ leetcode-tool update
 # 4. 提交代码
 ```
+### 3. 同步至Notion
+在 `.leetcode.json` 中填写好 `notion_key` 和 `database_id` 或 `page_id` 后，开启更新。
+
+注意，当第一次使用尚未创建数据库时， database_id 为空，page_id 有值时，会在 page_id 对应的父页面下自动创建数据库。
+
+将终端显示的 `database_id` 填入配置文件后，就更新对应数据库。
+```bash
+$ leetcode-tool sync --notion
+2024/05/05 00:56:43 Create Database: e7086c88f6504623956d1271b70aa2b4, Please add the database_id in the config file
+2024/05/05 00:56:43 Visited Link: https://www.notion.so/e7086c88f6504623956d1271b70aa2b4
+sync leetcode record to notion, progress: 51/52%
+```
+
+![](./screenshots/notion-leetcode-summary.png)
 
 ## Support Language 支持语言
 
@@ -142,6 +156,9 @@ number 为网页上显示的题目序号, 例如: `leetcode-tool new 1` 创建�
 `leetcode-tool tags`
 
 从 leetcode 网站拉取最新分类, 并创建 `toc` 对应文件, 一般不需要运行.
+
+### 同步 notion
+`leetcode-tool sync --notion`
 
 ### 重置项目
 
