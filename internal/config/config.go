@@ -14,6 +14,7 @@ type GptCfg struct {
 type NotionCfg struct {
 	Token      string `json:"token" mapstructure:"token"`
 	DatabaseID string `json:"database_id" mapstructure:"database_id"`
+	PageID     string `json:"page_id" mapstructure:"page_id"`
 }
 
 type Config struct {

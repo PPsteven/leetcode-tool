@@ -19,7 +19,7 @@ func Run(lc *leetcode.Leetcode, isNotion bool) {
 
 	if isNotion {
 		nc := notion.NewNotion(lc.Config.Notion.Token).
-			WithConfig("", lc.Config.Notion.DatabaseID)
+			WithConfig(lc.Config.Notion.PageID, lc.Config.Notion.DatabaseID)
 
 		err := nc.Init()
 		if err != nil {

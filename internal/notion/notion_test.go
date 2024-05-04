@@ -45,12 +45,19 @@ func TestNotion(t *testing.T) {
 		err := notion.Update("465b111ca3e74113a0fc382aa1d3dfa6", MetaToRecord(m))
 		assert.NoError(t, err)
 	})
+
 	t.Run("InsertOrUpdate", func(t *testing.T) {
 		_ = notion.Init()
 
 		m.Title = "test"
 		err := notion.InsertOrUpdate(MetaToRecord(m))
 		assert.NoError(t, err)
+	})
+
+	t.Run("CreateDB", func(t *testing.T) {
+		db, err := notion.CreateDB()
+		assert.NoError(t, err)
+		t.Log(db)
 	})
 }
 

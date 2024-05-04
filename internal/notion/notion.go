@@ -87,7 +87,7 @@ type PageData struct {
 
 func ParsePage(page *notionapi.Page) (PageUID, *PageData) {
 	var pageUID PageUID
-	pageID := GetPageID(page.ID)
+	pageID := GetStandardID(page.ID)
 	data := make(map[string]string)
 	for name, property := range page.Properties {
 		data[name] = ParseProperty(property)
@@ -165,6 +165,22 @@ func (n *Notion) WithConfig(pageID, databaseID string) *Notion {
 }
 
 func (n *Notion) Init() error {
+	if n.DatabaseID == "" && n.PageID == "" {
+		return fmt.Errorf("both database_id and page_id are empty")
+	}
+	// 1. 未填写database_id则创建数据库
+	if n.DatabaseID == "" && n.PageID != "" {
+		db, err := n.CreateDB()
+		if err != nil {
+			return fmt.Errorf("create database failed: %v", err)
+		}
+		n.DatabaseID = notionapi.DatabaseID(GetStandardID(db.ID))
+
+		log.Printf("Create Database: %d, Please add the database_id in the config file\n", n.DatabaseID)
+		log.Printf("Visited Link: %s", fmt.Sprintf("https://www.notion.so/%s", n.DatabaseID))
+	}
+
+	// 2. 创建完成database_id则添加记录
 	if n.DatabaseID != "" {
 		records, err := n.Query()
 		if err != nil {
@@ -237,10 +253,36 @@ func (n *Notion) InsertOrUpdate(record *Record) error {
 	return n.Insert(record)
 }
 
+var EmptySelect = notionapi.Select{Options: make([]notionapi.Option, 0)}
+
+func (n *Notion) CreateDB() (db *notionapi.Database, err error) {
+	ctx := context.Background()
+
+	dbReq := &notionapi.DatabaseCreateRequest{
+		Parent: notionapi.Parent{
+			Type:   "page_id",
+			PageID: n.PageID,
+		},
+		Title: []notionapi.RichText{{Text: &notionapi.Text{Content: "Leetcode"}}},
+		Properties: notionapi.PropertyConfigs{
+			"Link":       &notionapi.URLPropertyConfig{Type: "url"},
+			"Tags":       &notionapi.MultiSelectPropertyConfig{Type: "multi_select", MultiSelect: EmptySelect},
+			"Solved":     &notionapi.SelectPropertyConfig{Type: "select", Select: EmptySelect},
+			"Difficulty": &notionapi.SelectPropertyConfig{Type: "select", Select: EmptySelect},
+			"ID":         &notionapi.RichTextPropertyConfig{Type: "rich_text"},
+			"_id":        &notionapi.RichTextPropertyConfig{Type: "rich_text"},
+			"Name":       &notionapi.TitlePropertyConfig{Type: "title"},
+		},
+		IsInline: true, // show database inline in the parent page
+	}
+
+	return n.client.Database.Create(ctx, dbReq)
+}
+
 func GetPageSig(v map[string]string) string {
 	return fmt.Sprintf("%s_%s_%s_%s_%s_%s", v["Difficulty"], v["ID"], v["Link"], v["Name"], v["Solved"], v["Tags"])
 }
 
-func GetPageID(objectID notionapi.ObjectID) string {
-	return strings.ReplaceAll(objectID.String(), "-", "")
+func GetStandardID(stringer fmt.Stringer) string {
+	return strings.ReplaceAll(stringer.String(), "-", "")
 }
